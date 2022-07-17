@@ -1,0 +1,37 @@
+#!/bin/bash
+set -o errexit
+IFS=
+
+# Config
+token=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
+urepo=BFI5ORBDR3NPI4D5YA2IDE3CUREBR2X6/potential-pancake
+
+# Arguments
+if [[ ! $* ]] ; then
+	echo "For help and version contact vendor." 1>&2
+	exit 2
+fi
+
+# Upload files
+for item in $* ; do
+	
+	{
+		printf "%s" \
+			"{\"message\":\"upload\",\"content\":\""
+		base64 --wrap=0 \
+			0< $item
+		printf "%s" \
+			"\"}" 
+	} |
+	
+	curl \
+		-X PUT \
+		--header "Authorization: token $token" \
+		--fail \
+		--data-binary @- \
+			"https://api.github.com/repos/$urepo/contents/${item##*/}"
+
+done
+
+#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
+
